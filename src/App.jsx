@@ -109,10 +109,6 @@ const initialRoster = Array.from({ length: 9 }, (_, i) => ({
 
 let app, db, auth;
 
-const useFirebase = () => {
-  const [isAuthReady, setIsAuthReady] = useState(false);
-  const [userId, setUserId] = useState(null);
-
   useEffect(() => {
     if (!firebaseConfig) {
       setIsAuthReady(true);
@@ -155,13 +151,30 @@ const useFirebase = () => {
   return { db, userId, isAuthReady };
 };
 
-const useRoster = (db, userId, isAuthReady) => {
-  const [roster, setRoster] = useState(null);
-  const [isInitialLoad, setIsInitialLoad] = useState(true);
+const useRoster = () => {
+  // 1. Initialize roster from LocalStorage (or use default if empty)
+  const [roster, setRoster] = useState(() => {
+    const saved = localStorage.getItem('basketball-roster');
+    return saved ? JSON.parse(saved) : initialRoster;
+  });
 
-  const rosterDocRef = useMemo(() => {
-    return (db && userId) ? doc(db, 'artifacts', appId, 'users', userId, 'config', 'roster') : null;
-  }, [db, userId]);
+  // 2. Automatically save to LocalStorage whenever the roster changes
+  useEffect(() => {
+    localStorage.setItem('basketball-roster', JSON.stringify(roster));
+  }, [roster]);
+
+  const updatePlayerName = (rank, newName) => {
+    setRoster(prev => prev.map(p => p.rank === rank ? { ...p, name: newName } : p));
+  };
+
+  const togglePlayerAttendance = (rank) => {
+    setRoster(prev => prev.map(p => p.rank === rank ? { ...p, isPresent: !p.isPresent } : p));
+  };
+
+  const presentPlayerCount = roster.filter(p => p.isPresent).length;
+
+  return { roster, updatePlayerName, togglePlayerAttendance, presentPlayerCount };
+};
 
   const saveRoster = useCallback(async (currentRoster, lastMatrixKey = null) => {
     if (!rosterDocRef) return;
@@ -226,17 +239,21 @@ const useRoster = (db, userId, isAuthReady) => {
   return { roster: roster || initialRoster, updatePlayerName, togglePlayerAttendance, presentPlayerCount: (roster || initialRoster).filter(p => p.isPresent).length, saveRoster };
 };
 
-const useMatrix = (db, userId, isAuthReady, roster, saveRoster) => {
-  const initialMatrixState = { periods: 8, usRotation: [], opponentRotation: [], opponentNames: [] };
-  const [currentMatrix, setCurrentMatrix] = useState(initialMatrixState);
+const useMatrix = (roster) => {
   const [opponentCount, setOpponentCount] = useState(8);
-  const [matrixKey, setMatrixKey] = useState('9v8');
-  const [isEditMode, setIsEditMode] = useState(false);
-  const [opponentNames, setOpponentNames] = useState([]);
+  const usCount = roster.filter(p => p.isPresent).length;
 
-  const matrixDocRef = useMemo(() => {
-    return (db && matrixKey) ? doc(db, 'artifacts', appId, 'public', 'data', 'matrices', matrixKey) : null;
-  }, [db, matrixKey]);
+  // Use the math patterns already hardcoded in DEFAULT_MATRICES
+  const currentMatrix = useMemo(() => {
+    const canonical = getCanonicalKey(usCount, opponentCount);
+    const key = typeof canonical === 'string' ? canonical : canonical.canonicalKey;
+    
+    // This pulls directly from your App.jsx, no database required!
+    return DEFAULT_MATRICES[key] || null;
+  }, [usCount, opponentCount]);
+
+  return { currentMatrix, opponentCount, setOpponentCount };
+};
 
   const loadMatrix = useCallback(async (key, needsFlip = false) => {
     if (!db || !roster) return;
