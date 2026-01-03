@@ -1,12 +1,5 @@
-import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
-import { initializeApp } from 'firebase/app';
-import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from 'firebase/auth';
-import { getFirestore, doc, setDoc, onSnapshot, getDoc } from 'firebase/firestore';
-
-// --- Global Firebase/App ID Configuration ---
-const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
-const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
+// Delete the initializeApp, getAuth, and getFirestore lines.
 
 // Helper function to derive a canonical key (smaller player count first)
 const getCanonicalKey = (usCount, oppCount) => {
