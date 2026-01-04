@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 
-// --- 1. MATRICES DATA (STAYS AT TOP) ---
+// --- 1. MATRICES DATA ---
 const DEFAULT_MATRICES = {
   '5v5': { us: Array(5).fill(Array(8).fill(true)), opponent: Array(5).fill(Array(8).fill(true)) },
   '5v6': { us: [[true,true,false,true,true,true,false,true],[false,true,true,true,false,true,true,true],[true,true,false,true,true,true,false,true],[false,true,true,true,false,true,true,true],[true,true,true,false,true,false,true,true]], opponent: Array(6).fill(Array(8).fill(true)) },
@@ -24,11 +24,10 @@ const DEFAULT_MATRICES = {
   '9v10': { us: [[false,true,false,true,false,true,false,true],[false,true,false,true,false,true,false,true],[false,true,false,true,false,true,false,true],[false,true,false,true,false,true,false,true],[true,true,true,false,true,false,true,false],[true,false,true,true,true,false,true,false],[true,false,true,false,true,true,true,false],[true,false,true,false,true,false,true,true],[true,false,true,false,true,false,true,false]], opponent: [[false,true,false,true,false,true,false,true],[false,true,false,true,false,true,false,true],[false,true,false,true,false,true,false,true],[false,true,false,true,false,true,false,true],[false,true,false,true,false,true,false,true],[true,false,true,false,true,false,true,false],[true,false,true,false,true,false,true,false],[true,false,true,false,true,false,true,false],[true,false,true,false,true,false,true,false],[true,false,true,false,true,false,true,false]] },
 };
 
-// --- 2. LOGIC HELPERS ---
 const getCanonicalKey = (usCount, oppCount) => {
   const n = parseInt(usCount) || 0;
   const m = parseInt(oppCount) || 0;
-  if (n === 0 || m === 0) return '0v0';
+  if (n === 0 || m === 0) return { key: '5v5', flip: false }; // Safe default
   return n <= m ? { key: `${n}v${m}`, flip: false } : { key: `${m}v${n}`, flip: true };
 };
 
@@ -38,7 +37,7 @@ const initialRoster = Array.from({ length: 9 }, (_, i) => ({
   isPresent: false,
 }));
 
-// --- 3. CUSTOM HOOKS ---
+// --- 2. CUSTOM HOOKS ---
 const useRoster = () => {
   const [roster, setRoster] = useState(() => {
     const saved = localStorage.getItem('basketball-roster');
@@ -49,21 +48,17 @@ const useRoster = () => {
     localStorage.setItem('basketball-roster', JSON.stringify(roster));
   }, [roster]);
 
-  const updatePlayerName = (rank, newName) => {
-    setRoster(prev => prev.map(p => p.rank === rank ? { ...p, name: newName } : p));
+  return { 
+    roster, 
+    updatePlayerName: (rank, newName) => setRoster(prev => prev.map(p => p.rank === rank ? { ...p, name: newName } : p)),
+    togglePlayerAttendance: (rank) => setRoster(prev => prev.map(p => p.rank === rank ? { ...p, isPresent: !p.isPresent } : p)),
+    presentPlayerCount: roster.filter(p => p.isPresent).length 
   };
-
-  const togglePlayerAttendance = (rank) => {
-    setRoster(prev => prev.map(p => p.rank === rank ? { ...p, isPresent: !p.isPresent } : p));
-  };
-
-  return { roster, updatePlayerName, togglePlayerAttendance, presentPlayerCount: roster.filter(p => p.isPresent).length };
 };
 
 const useMatrix = (roster) => {
   const [opponentCount, setOpponentCount] = useState(8);
-  const [isEditMode, setIsEditMode] = useState(false);
-  const [opponentNames, setOpponentNames] = useState(Array.from({ length: 10 }, (_, i) => `Player ${i + 1}`));
+  const [opponentNames, setOpponentNames] = useState(Array.from({ length: 10 }, (_, i) => `Opponent ${i + 1}`));
 
   const usCount = roster.filter(p => p.isPresent).length;
   const { key, flip } = getCanonicalKey(usCount, opponentCount);
@@ -83,8 +78,6 @@ const useMatrix = (roster) => {
     opponentCount, 
     setOpponentCount, 
     matrixKey: key, 
-    isEditMode, 
-    toggleEditMode: () => setIsEditMode(!isEditMode),
     opponentNames,
     updateOpponentName: (idx, val) => setOpponentNames(prev => {
         const next = [...prev];
@@ -94,7 +87,7 @@ const useMatrix = (roster) => {
   };
 };
 
-// --- 4. COMPONENTS ---
+// --- 3. COMPONENTS ---
 const Navigation = ({ currentPage, setCurrentPage }) => (
   <nav className="max-w-7xl mx-auto mb-8 bg-white shadow-xl rounded-xl p-3 flex flex-wrap justify-center gap-4 border-b-4 border-indigo-500">
     {['attendance', 'grid', 'roster'].map(id => (
@@ -133,33 +126,36 @@ const RosterSetup = ({ roster, updatePlayerName }) => (
   </div>
 );
 
-const PlayerMatrixGrid = ({ roster, currentMatrix, matrixKey, setOpponentCount, opponentCount, isEditMode, toggleEditMode, opponentNames, updateOpponentName }) => {
+const PlayerMatrixGrid = ({ roster, currentMatrix, matrixKey, setOpponentCount, opponentCount, opponentNames, updateOpponentName }) => {
   const [curP, setCurP] = useState(null);
   const presentRoster = useMemo(() => roster.filter(p => p.isPresent), [roster]);
 
-  if (presentRoster.length < 5) return <div className="text-center p-8 bg-white rounded-lg shadow-xl m-4"><p className="font-bold text-red-500">Need at least 5 players checked in to view grid.</p></div>;
-  if (!currentMatrix) return <div className="text-center p-8 bg-white rounded-lg shadow-xl m-4">Loading Matrix...</div>;
+  if (presentRoster.length < 5) return <div className="text-center p-8 bg-white rounded-lg shadow-xl m-4"><p className="font-bold text-red-500 uppercase">You must check in 5+ players first.</p></div>;
+  if (!currentMatrix) return <div className="text-center p-8 bg-white rounded-lg shadow-xl m-4">Loading Data...</div>;
 
   const renderTbl = (rot, team) => {
-    const rows = team === 'us' ? presentRoster : Array.from({ length: rot.length }, (_, i) => ({ name: opponentNames[i] || `Player ${i + 1}` }));
+    // THIS LINE IS THE FIX: It creates rows based on the actual rotation size
+    const rowCount = rot.length;
+    const rows = team === 'us' ? presentRoster : Array.from({ length: rowCount }, (_, i) => ({ name: opponentNames[i] || `Opponent ${i + 1}` }));
+    
     return (
       <div className="overflow-x-auto rounded-xl shadow-xl border border-gray-200">
         <table className="min-w-full bg-white table-fixed border-collapse">
           <thead className="bg-gray-100">
             <tr>
-              <th className="px-1 py-2 text-xs font-bold text-gray-500 uppercase border-r w-[90px]">TEAM</th>
+              <th className="px-1 py-2 text-[10px] font-bold text-gray-500 uppercase border-r w-[85px]">Team</th>
               {Array.from({ length: 8 }, (_, i) => i + 1).map(p => <th key={p} className={`px-1 py-2 text-xs font-bold uppercase ${curP === p ? 'bg-indigo-300' : 'text-gray-500'}`}>P{p}</th>)}
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
             {rows.map((p, i) => (
               <tr key={i} className="hover:bg-indigo-50">
-                <td className="py-2 text-xs font-bold bg-white border-r text-center">
-                  {team === 'us' ? <span className="truncate block mx-auto">{p.name}</span> : <input type="text" value={p.name} onChange={(e) => updateOpponentName(i, e.target.value)} className="w-full text-center outline-none bg-transparent" />}
+                <td className="py-2 text-[11px] font-bold bg-white border-r text-center">
+                  {team === 'us' ? <span className="truncate block mx-auto px-1">{p.name}</span> : <input type="text" value={p.name} onChange={(e) => updateOpponentName(i, e.target.value)} className="w-full text-center outline-none bg-transparent" />}
                 </td>
                 {(rot[i] || []).map((on, j) => (
                   <td key={j} className={`px-1 py-2 text-center ${curP === j + 1 ? 'bg-indigo-100' : ''}`}>
-                    <div className={`w-6 h-6 mx-auto rounded-full flex items-center justify-center border-2 ${on ? 'bg-green-500 border-green-600 text-white' : 'bg-gray-100 border-gray-300'}`}>{on ? 'X' : ''}</div>
+                    <div className={`w-5 h-5 mx-auto rounded-full flex items-center justify-center border-2 ${on ? 'bg-green-500 border-green-600 text-white text-[10px] font-bold' : 'bg-gray-100 border-gray-300'}`}>{on ? 'X' : ''}</div>
                   </td>
                 ))}
               </tr>
@@ -172,18 +168,14 @@ const PlayerMatrixGrid = ({ roster, currentMatrix, matrixKey, setOpponentCount, 
 
   return (
     <div className="bg-white rounded-lg shadow-xl w-full max-w-7xl mx-auto p-4 md:p-6">
-      <div className="flex justify-between items-center border-b pb-3 mb-6">
-        <h2 className="text-2xl font-extrabold text-indigo-700">Rotation Grid</h2>
-        <button onClick={toggleEditMode} className="px-4 py-1 text-sm rounded-full font-bold bg-indigo-500 text-white">Manual Edit Disabled</button>
-      </div>
       <div className="flex flex-wrap items-center justify-between gap-4 mb-6 p-4 bg-indigo-50 rounded-lg">
-        <div><label className="text-xs font-bold text-gray-500 uppercase">Present</label><div className="text-xl font-bold text-indigo-700">{presentRoster.length} Players</div></div>
-        <div className="text-center"><label className="text-xs font-bold text-gray-500 uppercase">Opponents</label><div className="flex gap-1 mt-1">{[10,9,8,7,6,5].map(c => <button key={c} onClick={() => setOpponentCount(c)} className={`w-8 h-8 rounded font-bold text-sm border-2 ${opponentCount === c ? 'bg-indigo-600 text-white border-indigo-700' : 'bg-white text-indigo-600 border-indigo-200'}`}>{c}</button>)}</div></div>
-        <div><label className="text-xs font-bold text-gray-500 uppercase">Matchup</label><div className="text-lg font-bold text-indigo-700">{matrixKey.toUpperCase()}</div></div>
+        <div><label className="text-[10px] font-bold text-gray-400 uppercase">Your Team</label><div className="text-xl font-bold text-indigo-700">{presentRoster.length} Players</div></div>
+        <div className="text-center"><label className="text-[10px] font-bold text-gray-400 uppercase">Opponents</label><div className="flex gap-1 mt-1">{[10,9,8,7,6,5].map(c => <button key={c} onClick={() => setOpponentCount(c)} className={`w-8 h-8 rounded font-bold text-xs border-2 ${opponentCount === c ? 'bg-indigo-600 text-white border-indigo-700' : 'bg-white text-indigo-600 border-indigo-200'}`}>{c}</button>)}</div></div>
+        <div className="text-right"><label className="text-[10px] font-bold text-gray-400 uppercase">Matchup</label><div className="text-lg font-bold text-indigo-700">{matrixKey.toUpperCase()}</div></div>
       </div>
       <div className="grid md:grid-cols-2 gap-8">
-        <div><h3 className="text-md font-bold mb-2 text-gray-700">Your Team</h3>{renderTbl(currentMatrix.usRotation, 'us')}</div>
-        <div><h3 className="text-md font-bold mb-2 text-gray-700">Opponents</h3>{renderTbl(currentMatrix.opponentRotation, 'opponent')}</div>
+        <div><h3 className="text-sm font-bold mb-2 text-gray-600 uppercase tracking-tight">Your Team Rotation</h3>{renderTbl(currentMatrix.usRotation, 'us')}</div>
+        <div><h3 className="text-sm font-bold mb-2 text-gray-600 uppercase tracking-tight">Opponent Team Rotation</h3>{renderTbl(currentMatrix.opponentRotation, 'opponent')}</div>
       </div>
     </div>
   );
@@ -197,8 +189,8 @@ const App = () => {
   return (
     <div className="min-h-screen bg-gray-100 p-4 md:p-8 font-sans">
       <header className="text-center mb-8">
-        <h1 className="text-4xl font-extrabold text-indigo-800">Rotation Matrix Tool</h1>
-        <p className="text-md text-gray-600 mt-2">Vercel Production Version (Local Storage Enabled)</p>
+        <h1 className="text-4xl font-extrabold text-indigo-800">Rotation Matrix</h1>
+        <p className="text-xs text-gray-500 mt-2 uppercase tracking-widest">League Tool v2.1</p>
       </header>
       <Navigation currentPage={page} setCurrentPage={setPage} />
       <main className="max-w-7xl mx-auto">
