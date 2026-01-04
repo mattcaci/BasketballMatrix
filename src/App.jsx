@@ -58,7 +58,17 @@ const useRoster = () => {
 
 const useMatrix = (roster) => {
   const [opponentCount, setOpponentCount] = useState(8);
-  const [opponentNames, setOpponentNames] = useState(Array.from({ length: 10 }, (_, i) => `Opponent ${i + 1}`));
+  
+  // Load opponent names from LocalStorage or default to empty object
+  const [opponentNames, setOpponentNames] = useState(() => {
+    const saved = localStorage.getItem('opponent-names');
+    return saved ? JSON.parse(saved) : {};
+  });
+
+  // Save opponent names whenever they change
+  useEffect(() => {
+    localStorage.setItem('opponent-names', JSON.stringify(opponentNames));
+  }, [opponentNames]);
 
   const usCount = roster.filter(p => p.isPresent).length;
   const { key, flip } = getCanonicalKey(usCount, opponentCount);
@@ -73,20 +83,19 @@ const useMatrix = (roster) => {
     };
   }, [key, flip]);
 
+  const updateOpponentName = (idx, name) => {
+    setOpponentNames(prev => ({ ...prev, [idx]: name }));
+  };
+
   return { 
     currentMatrix, 
     opponentCount, 
     setOpponentCount, 
     matrixKey: key, 
-    opponentNames,
-    updateOpponentName: (idx, val) => setOpponentNames(prev => {
-        const next = [...prev];
-        next[idx] = val;
-        return next;
-    })
+    opponentNames, 
+    updateOpponentName 
   };
 };
-
 // --- 3. COMPONENTS ---
 const Navigation = ({ currentPage, setCurrentPage }) => (
   <nav className="max-w-7xl mx-auto mb-8 bg-white shadow-xl rounded-xl p-3 flex flex-wrap justify-center gap-4 border-b-4 border-indigo-500">
@@ -126,29 +135,66 @@ const RosterSetup = ({ roster, updatePlayerName }) => (
   </div>
 );
 
-const PlayerMatrixGrid = ({ roster, currentMatrix, matrixKey, setOpponentCount, opponentCount }) => {
+const PlayerMatrixGrid = ({ roster, currentMatrix, matrixKey, setOpponentCount, opponentCount, opponentNames, updateOpponentName }) => {
   const [curP, setCurP] = useState(null);
-  
-  // 1. Get only the players marked 'Present'
   const presentRoster = useMemo(() => roster.filter(p => p.isPresent), [roster]);
 
-  // 2. Safety Check: If no data, show a clear message
-  if (presentRoster.length < 5) {
+  if (presentRoster.length < 5) return <div className="text-center p-8 bg-white rounded-lg shadow-xl m-4"><p className="font-bold text-red-500">Check in 5+ players to view grid.</p></div>;
+  if (!currentMatrix) return <div className="text-center p-8 bg-white rounded-lg shadow-xl m-4">Loading Matrix...</div>;
+
+  const renderTbl = (rot, team) => {
     return (
-      <div className="text-center p-8 bg-white rounded-lg shadow-xl m-4">
-        <p className="font-bold text-red-500 uppercase">Step 1: Go to Check-In and mark 5+ players present.</p>
+      <div className="overflow-x-auto rounded-xl shadow-xl border border-gray-200">
+        <table className="min-w-full bg-white table-fixed border-collapse">
+          <thead className="bg-gray-100">
+            <tr>
+              <th className="px-1 py-2 text-[10px] font-bold text-gray-500 uppercase border-r w-[90px]">TEAM</th>
+              {[1,2,3,4,5,6,7,8].map(p => <th key={p} className={`px-1 py-2 text-xs font-bold ${curP === p ? 'bg-indigo-300' : 'text-gray-500'}`}>P{p}</th>)}
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-200">
+            {rot.map((row, i) => (
+              <tr key={i} className="hover:bg-indigo-50">
+                <td className="py-2 text-[11px] font-bold bg-white border-r text-center px-1">
+                  {team === 'us' ? (
+                    <span className="truncate block mx-auto">{presentRoster[i]?.name || `Player ${i+1}`}</span>
+                  ) : (
+                    <input 
+                      type="text" 
+                      value={opponentNames[i] || ""} 
+                      placeholder={`Player ${i + 1}`}
+                      onChange={(e) => updateOpponentName(i, e.target.value)} 
+                      className="w-full text-center outline-none bg-transparent placeholder-gray-400" 
+                    />
+                  )}
+                </td>
+                {row.map((on, j) => (
+                  <td key={j} className={`px-1 py-2 text-center ${curP === j + 1 ? 'bg-indigo-100' : ''}`}>
+                    <div className={`w-5 h-5 mx-auto rounded-full flex items-center justify-center border-2 ${on ? 'bg-green-500 border-green-600 text-white text-[10px] font-bold' : 'bg-gray-100 border-gray-300'}`}>{on ? 'X' : ''}</div>
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     );
-  }
+  };
 
-  if (!currentMatrix || !currentMatrix.usRotation || !currentMatrix.opponentRotation) {
-    return (
-      <div className="text-center p-8 bg-white rounded-lg shadow-xl m-4">
-        <p>Calculating rotation for {presentRoster.length} players...</p>
+  return (
+    <div className="bg-white rounded-lg shadow-xl w-full max-w-7xl mx-auto p-4 md:p-6">
+      <div className="flex flex-wrap items-center justify-between gap-4 mb-6 p-4 bg-indigo-50 rounded-lg">
+        <div><label className="text-[10px] font-bold text-gray-400 uppercase">Your Team</label><div className="text-xl font-bold text-indigo-700">{presentRoster.length} Players</div></div>
+        <div className="text-center"><label className="text-[10px] font-bold text-gray-400 uppercase">Opponents</label><div className="flex gap-1 mt-1">{[10,9,8,7,6,5].map(c => <button key={c} onClick={() => setOpponentCount(c)} className={`w-8 h-8 rounded font-bold text-xs border-2 ${opponentCount === c ? 'bg-indigo-600 text-white border-indigo-700' : 'bg-white text-indigo-600 border-indigo-200'}`}>{c}</button>)}</div></div>
+        <div className="text-right"><label className="text-[10px] font-bold text-gray-400 uppercase">Matchup</label><div className="text-lg font-bold text-indigo-700">{matrixKey.toUpperCase()}</div></div>
       </div>
-    );
-  }
-
+      <div className="grid md:grid-cols-2 gap-8">
+        <div><h3 className="text-sm font-bold mb-2 text-gray-600 uppercase">Your Team</h3>{renderTbl(currentMatrix.usRotation, 'us')}</div>
+        <div><h3 className="text-sm font-bold mb-2 text-gray-600 uppercase">Opponents</h3>{renderTbl(currentMatrix.opponentRotation, 'opponent')}</div>
+      </div>
+    </div>
+  );
+};
   const renderTbl = (rot, isUsTeam) => {
     return (
       <div className="overflow-x-auto rounded-xl shadow-xl border border-gray-200">
