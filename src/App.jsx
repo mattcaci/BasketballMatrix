@@ -241,15 +241,27 @@ const useRoster = () => {
 
 const useMatrix = (roster) => {
   const [opponentCount, setOpponentCount] = useState(8);
-  const usCount = roster.filter(p => p.isPresent).length;
 
-  // Use the math patterns already hardcoded in DEFAULT_MATRICES
+  // 1. Calculate the player count more robustly
+  const usCount = useMemo(() => {
+    return Array.isArray(roster) ? roster.filter(p => p.isPresent).length : 0;
+  }, [roster]);
+
+  // 2. Add debugging and safety to the matrix selection
   const currentMatrix = useMemo(() => {
+    if (usCount === 0) return null; // Don't try to render if no one is checked in
+
     const canonical = getCanonicalKey(usCount, opponentCount);
+    // Ensure we handle both string and object returns from getCanonicalKey
     const key = typeof canonical === 'string' ? canonical : canonical.canonicalKey;
     
-    // This pulls directly from your App.jsx, no database required!
-    return DEFAULT_MATRICES[key] || null;
+    // Safety check: if the key doesn't exist, log it so you can see it in F12
+    if (!DEFAULT_MATRICES[key]) {
+      console.warn(`Matrix key "${key}" not found in DEFAULT_MATRICES`);
+      return null;
+    }
+
+    return DEFAULT_MATRICES[key];
   }, [usCount, opponentCount]);
 
   return { currentMatrix, opponentCount, setOpponentCount };
