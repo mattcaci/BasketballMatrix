@@ -1,0 +1,81 @@
+[
+  {
+    "key": "5v5",
+    "periods": 8,
+    "rules": {
+      "1": ["PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY"],
+      "2": ["PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY"],
+      "3": ["PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY"],
+      "4": ["PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY"],
+      "5": ["PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY"]
+    }
+  },
+  {
+    "key": "6v5",
+    "periods": 8,
+    "rules": {
+      "1": ["PLAY", "PLAY", "PLAY", "SIT", "PLAY", "PLAY", "PLAY", "SIT"],
+      "2": ["PLAY", "PLAY", "SIT", "PLAY", "PLAY", "PLAY", "SIT", "PLAY"],
+      "3": ["PLAY", "SIT", "PLAY", "PLAY", "PLAY", "SIT", "PLAY", "PLAY"],
+      "4": ["SIT", "PLAY", "PLAY", "PLAY", "SIT", "PLAY", "PLAY", "PLAY"],
+      "5": ["PLAY", "PLAY", "PLAY", "SIT", "PLAY", "PLAY", "PLAY", "SIT"],
+      "6": ["PLAY", "PLAY", "SIT", "PLAY", "PLAY", "PLAY", "SIT", "PLAY"]
+    }
+  },
+  {
+    "key": "7v6",
+    "periods": 8,
+    "rules": {
+      "1": ["PLAY", "PLAY", "SIT", "PLAY", "PLAY", "SIT", "PLAY", "PLAY"],
+      "2": ["PLAY", "SIT", "PLAY", "PLAY", "SIT", "PLAY", "PLAY", "PLAY"],
+      "3": ["SIT", "PLAY", "PLAY", "SIT", "PLAY", "PLAY", "PLAY", "PLAY"],
+      "4": ["PLAY", "PLAY", "SIT", "PLAY", "PLAY", "PLAY", "SIT", "PLAY"],
+      "5": ["PLAY", "SIT", "PLAY", "PLAY", "PLAY", "SIT", "PLAY", "PLAY"],
+      "6": ["SIT", "PLAY", "PLAY", "PLAY", "SIT", "PLAY", "PLAY", "PLAY"],
+      "7": ["PLAY", "PLAY", "PLAY", "SIT", "PLAY", "PLAY", "SIT", "PLAY"]
+    }
+  },
+  {
+    "key": "7v7",
+    "periods": 8,
+    "rules": {
+      "1": ["PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY"],
+      "2": ["PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY"],
+      "3": ["PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY"],
+      "4": ["PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY"],
+      "5": ["PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY"],
+      "6": ["PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY"],
+      "7": ["PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY"]
+    }
+  },
+  {
+    "key": "8v7",
+    "periods": 8,
+    "rules": {
+      "1": ["PLAY", "PLAY", "PLAY", "SIT", "PLAY", "PLAY", "PLAY", "SIT"],
+      "2": ["PLAY", "PLAY", "SIT", "PLAY", "PLAY", "PLAY", "SIT", "PLAY"],
+      "3": ["PLAY", "SIT", "PLAY", "PLAY", "PLAY", "SIT", "PLAY", "PLAY"],
+      "4": ["SIT", "PLAY", "PLAY", "PLAY", "SIT", "PLAY", "PLAY", "PLAY"],
+      "5": ["PLAY", "PLAY", "PLAY", "SIT", "PLAY", "PLAY", "PLAY", "SIT"],
+      "6": ["PLAY", "PLAY", "SIT", "PLAY", "PLAY", "PLAY", "SIT", "PLAY"],
+      "7": ["PLAY", "SIT", "PLAY", "PLAY", "PLAY", "SIT", "PLAY", "PLAY"],
+      "8": ["SIT", "PLAY", "PLAY", "PLAY", "SIT", "PLAY", "PLAY", "PLAY"]
+    }
+  },
+  {
+    "key": "10v10",
+    "periods": 8,
+    "rules": {
+      "1": ["PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY"],
+      "2": ["PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY"],
+      "3": ["PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY"],
+      "4": ["PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY"],
+      "5": ["PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY"],
+      "6": ["PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY"],
+      "7": ["PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY"],
+      "8": ["PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY"],
+      "9": ["PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY"],
+      "10": ["PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY"]
+    }
+  }
+]
