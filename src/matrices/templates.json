@@ -1,81 +1,438 @@
-[
-  {
-    "key": "5v5",
-    "periods": 8,
-    "rules": {
-      "1": ["PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY"],
-      "2": ["PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY"],
-      "3": ["PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY"],
-      "4": ["PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY"],
-      "5": ["PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY"]
-    }
+// Matrix structure: player_rank[1-9] -> array of periods [1-8]
+const DEFAULT_MATRICES = {
+
+  '5v5': {
+    us: [
+      [true, true, true, true, true, true, true, true],
+      [true, true, true, true, true, true, true, true],
+      [true, true, true, true, true, true, true, true],
+      [true, true, true, true, true, true, true, true],
+      [true, true, true, true, true, true, true, true]
+    ],
+    opponent: [
+      [true, true, true, true, true, true, true, true],
+      [true, true, true, true, true, true, true, true],
+      [true, true, true, true, true, true, true, true],
+      [true, true, true, true, true, true, true, true],
+      [true, true, true, true, true, true, true, true]
+    ]
   },
-  {
-    "key": "6v5",
-    "periods": 8,
-    "rules": {
-      "1": ["PLAY", "PLAY", "PLAY", "SIT", "PLAY", "PLAY", "PLAY", "SIT"],
-      "2": ["PLAY", "PLAY", "SIT", "PLAY", "PLAY", "PLAY", "SIT", "PLAY"],
-      "3": ["PLAY", "SIT", "PLAY", "PLAY", "PLAY", "SIT", "PLAY", "PLAY"],
-      "4": ["SIT", "PLAY", "PLAY", "PLAY", "SIT", "PLAY", "PLAY", "PLAY"],
-      "5": ["PLAY", "PLAY", "PLAY", "SIT", "PLAY", "PLAY", "PLAY", "SIT"],
-      "6": ["PLAY", "PLAY", "SIT", "PLAY", "PLAY", "PLAY", "SIT", "PLAY"]
-    }
+
+  '5v6': {
+    us: [
+      [true, true, true, true, true, true, true, true],
+      [true, true, true, true, true, true, true, true],
+      [true, true, true, true, true, true, true, true],
+      [true, true, true, true, true, true, true, true],
+      [true, true, true, true, true, true, true, true]
+    ],
+    opponent: [
+      [true, true, false, true, true, true, true, true],
+      [false, true, true, true, true, true, true, true],
+      [true, true, true, true, true, false, true, true],
+      [true, true, true, true, false, true, true, true],
+      [true, true, true, false, true, true, false, true],
+      [true, false, true, true, true, true, true, false]
+    ]
   },
-  {
-    "key": "7v6",
-    "periods": 8,
-    "rules": {
-      "1": ["PLAY", "PLAY", "SIT", "PLAY", "PLAY", "SIT", "PLAY", "PLAY"],
-      "2": ["PLAY", "SIT", "PLAY", "PLAY", "SIT", "PLAY", "PLAY", "PLAY"],
-      "3": ["SIT", "PLAY", "PLAY", "SIT", "PLAY", "PLAY", "PLAY", "PLAY"],
-      "4": ["PLAY", "PLAY", "SIT", "PLAY", "PLAY", "PLAY", "SIT", "PLAY"],
-      "5": ["PLAY", "SIT", "PLAY", "PLAY", "PLAY", "SIT", "PLAY", "PLAY"],
-      "6": ["SIT", "PLAY", "PLAY", "PLAY", "SIT", "PLAY", "PLAY", "PLAY"],
-      "7": ["PLAY", "PLAY", "PLAY", "SIT", "PLAY", "PLAY", "SIT", "PLAY"]
-    }
+
+  '5v7': {
+    us: [
+      [true, true, true, true, true, true, true, true],
+      [true, true, true, true, true, true, true, true],
+      [true, true, true, true, true, true, true, true],
+      [true, true, true, true, true, true, true, true],
+      [true, true, true, true, true, true, true, true]
+    ],
+    opponent: [
+      [true, true, false, true, true, true, false, true],
+      [false, true, true, true, false, true, true, true],
+      [true, true, false, true, true, true, false, true],
+      [false, true, true, true, false, true, true, true],
+      [true, true, true, false, true, false, true, true],
+      [true, false, true, true, true, false, true, false],
+      [true, false, true, false, true, true, true, false]
+    ]
   },
-  {
-    "key": "7v7",
-    "periods": 8,
-    "rules": {
-      "1": ["PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY"],
-      "2": ["PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY"],
-      "3": ["PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY"],
-      "4": ["PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY"],
-      "5": ["PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY"],
-      "6": ["PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY"],
-      "7": ["PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY"]
-    }
+
+  '5v8': {
+    us: [
+      [true, true, true, true, true, true, true, true],  
+      [true, true, true, true, true, true, true, true],  
+      [true, true, true, true, true, true, true, true],  
+      [true, true, true, true, true, true, true, true],  
+      [true, true, true, true, true, true, true, true]
+    ],
+    opponent: [
+      [true, true, false, true, false, true, false, true],
+      [true, true, true, false, true, false, true, false],
+      [true, false, true, false, true, true, true, false],
+      [false, true, true, true, false, true, false, true],
+      [false, true, false, true, false, true, true, true],
+      [true, false, true, true, true, false, true, false],
+      [true, false, true, false, true, false, true, true],
+      [false, true, false, true, true, true, false, true]
+    ]
   },
-  {
-    "key": "8v7",
-    "periods": 8,
-    "rules": {
-      "1": ["PLAY", "PLAY", "PLAY", "SIT", "PLAY", "PLAY", "PLAY", "SIT"],
-      "2": ["PLAY", "PLAY", "SIT", "PLAY", "PLAY", "PLAY", "SIT", "PLAY"],
-      "3": ["PLAY", "SIT", "PLAY", "PLAY", "PLAY", "SIT", "PLAY", "PLAY"],
-      "4": ["SIT", "PLAY", "PLAY", "PLAY", "SIT", "PLAY", "PLAY", "PLAY"],
-      "5": ["PLAY", "PLAY", "PLAY", "SIT", "PLAY", "PLAY", "PLAY", "SIT"],
-      "6": ["PLAY", "PLAY", "SIT", "PLAY", "PLAY", "PLAY", "SIT", "PLAY"],
-      "7": ["PLAY", "SIT", "PLAY", "PLAY", "PLAY", "SIT", "PLAY", "PLAY"],
-      "8": ["SIT", "PLAY", "PLAY", "PLAY", "SIT", "PLAY", "PLAY", "PLAY"]
-    }
+
+  '5v9': {
+    us: [
+      [true, true, true, true, true, true, true, true],
+      [true, true, true, true, true, true, true, true],
+      [true, true, true, true, true, true, true, true],
+      [true, true, true, true, true, true, true, true],
+      [true, true, true, true, true, true, true, true]
+    ],
+    opponent: [
+      [false, true, false, true, true, true, false, true],
+      [true, false, true, false, true, false, true, true],
+      [false, true, true, true, false, true, false, true],
+      [true, true, false, true, false, true, true, false],
+      [true, false, true, false, true, false, true, false],
+      [false, true, false, true, false, true, false, true],
+      [true, false, true, false, true, false, true, false],
+      [false, true, false, true, false, true, false, true],
+      [true, false, true, false, true, false, true, false]
+    ]
   },
-  {
-    "key": "10v10",
-    "periods": 8,
-    "rules": {
-      "1": ["PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY"],
-      "2": ["PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY"],
-      "3": ["PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY"],
-      "4": ["PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY"],
-      "5": ["PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY"],
-      "6": ["PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY"],
-      "7": ["PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY"],
-      "8": ["PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY"],
-      "9": ["PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY"],
-      "10": ["PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY", "PLAY"]
-    }
-  }
-]
+
+  '5v10': {
+    us: [
+      [true, true, true, true, true, true, true, true],
+      [true, true, true, true, true, true, true, true],
+      [true, true, true, true, true, true, true, true],
+      [true, true, true, true, true, true, true, true],
+      [true, true, true, true, true, true, true, true]
+    ],
+    opponent: [
+      [false, true, false, true, false, true, false, true],
+      [true, false, true, false, true, false, true, false],
+      [true, false, true, false, true, false, true, false],
+      [false, true, false, true, false, true, false, true],
+      [false, true, false, true, false, true, false, true],
+      [true, false, true, false, true, false, true, false],
+      [false, true, false, true, false, true, false, true],
+      [true, false, true, false, true, false, true, false],
+      [false, true, false, true, false, true, false, true],
+      [true, false, true, false, true, false, true, false]
+    ]
+  },
+
+  '6v6': {
+    us: [
+      [true, true, false, true, true, true, true, true],
+      [false, true, true, true, true, true, true, true],
+      [true, true, true, true, true, false, true, true],
+      [true, true, true, true, false, true, true, true],
+      [true, true, true, false, true, true, false, true],
+      [true, false, true, true, true, true, true, false]
+    ],
+    opponent: [
+      [true, true, false, true, true, true, true, true],
+      [false, true, true, true, true, true, true, true],
+      [true, true, true, true, true, false, true, true],
+      [true, true, true, true, false, true, true, true],
+      [true, true, true, false, true, true, false, true],
+      [true, false, true, true, true, true, true, false]
+    ]
+  },
+
+  '6v7': {
+    us: [
+      [true, true, false, true, true, true, false, true],
+      [false, true, true, true, false, true, true, true],
+      [true, true, false, true, true, true, false, true],
+      [false, true, true, true, false, true, true, true],
+      [true, true, true, false, true, false, true, true],
+      [true, false, true, true, true, false, true, false]
+    ],
+    opponent: [
+      [true, true, true, true, true, true, false, true],
+      [false, true, true, true, false, true, true, true],
+      [true, false, true, true, true, true, true, true],
+      [true, true, false, false, true, true, true, true],
+      [true, true, true, true, true, false, true, false],
+      [true, true, true, true, true, true, true, false],
+      [true, false, true, false, true, true, true, false]
+    ]
+  },
+
+  '6v8': {
+    us: [
+      [true, true, false, true, true, true, false, true],
+      [false, true, true, true, false, true, true, true],
+      [true, false, true, true, true, true, true, true],
+      [true, true, true, false, true, true, true, true],
+      [true, true, true, true, true, false, true, true],
+      [true, true, true, true, true, true, true, false]
+    ],
+    opponent: [
+      [true, true, false, true, false, true, false, true],
+      [true, true, true, false, true, false, true, false],
+      [true, false, true, false, true, true, true, false],
+      [false, true, true, true, false, true, false, true],
+      [false, true, false, true, false, true, true, true],
+      [true, false, true, true, true, false, true, false],
+      [true, false, true, false, true, false, true, true],
+      [false, true, false, true, true, true, false, true]
+    ]
+  },
+
+  '6v9': {
+    us: [
+      [false, true, true, true, true, true, false, true],
+      [true, true, false, true, true, true, true, false],
+      [true, true, true, true, false, true, true, true],
+      [true, true, true, false, true, true, true, true],
+      [true, false, true, true, true, true, true, true],
+      [true, true, true, true, true, false, true, true]
+    ],
+    opponent: [
+      [false, true, false, true, true, true, false, true],
+      [true, false, true, false, true, false, true, true],
+      [false, true, true, true, false, true, false, true],
+      [true, true, false, true, false, true, true, false],
+      [true, false, true, false, true, false, true, false],
+      [false, true, false, true, false, true, false, true],
+      [true, false, true, false, true, false, true, false],
+      [false, true, false, true, false, true, false, true],
+      [true, false, true, false, true, false, true, false]
+    ]
+  },
+
+  '6v10': { 
+    us: [
+      [false, true, true, true, true, true, false, true],
+      [true, false, true, true, true, true, true, false],
+      [true, true, false, true, true, true, true, true],
+      [true, true, true, false, true, true, true, true],
+      [true, true, true, true, false, true, true, true],
+      [true, true, true, true, true, false, true, true],
+    ],
+    opponent: [
+      [false, true, false, true, false, true, false, true],
+      [true, false, true, false, true, false, true, false],
+      [true, false, true, false, true, false, true, false],
+      [false, true, false, true, false, true, false, true],
+      [false, true, false, true, false, true, false, true],
+      [true, false, true, false, true, false, true, false],
+      [false, true, false, true, false, true, false, true],
+      [true, false, true, false, true, false, true, false],
+      [false, true, false, true, false, true, false, true],
+      [true, false, true, false, true, false, true, false],
+    ]
+  },
+
+  '7v7': {
+    us: [
+      [true, true, false, true, true, true, false, true],
+      [false, true, true, true, false, true, true, true],
+      [true, true, false, true, true, true, false, true],
+      [false, true, true, true, false, true, true, true],
+      [true, true, true, false, true, false, true, true],
+      [true, false, true, true, true, false, true, false],
+      [true, false, true, false, true, true, true, false]
+    ],
+    opponent: [
+      [true, true, false, true, true, true, false, true],
+      [false, true, true, true, false, true, true, true],
+      [true, true, false, true, true, true, false, true],
+      [false, true, true, true, false, true, true, true],
+      [true, true, true, false, true, false, true, true],
+      [true, false, true, true, true, false, true, false],
+      [true, false, true, false, true, true, true, false]
+    ]
+  },
+
+  '7v8': {
+    us: [
+      [false, true, false, true, false, true, true, true],
+      [false, true, false, true, true, true, false, true],
+      [true, true, true, true, false, true, true, false],
+      [true, false, true, true, true, false, true, true],
+      [true, true, true, false, true, true, true, false],
+      [true, true, true, false, true, true, false, true],
+      [true, false, true, true, true, false, true, true]
+    ],
+    opponent: [
+      [false, true, false, true, false, true, true, true],
+      [false, true, false, true, true, true, false, true],
+      [false, true, true, true, false, true, false, true],
+      [true, true, false, true, false, true, false, true],
+      [true, false, true, true, true, false, true, false],
+      [true, true, true, false, true, false, true, false],
+      [true, false, true, false, true, false, true, true],
+      [true, false, true, false, true, true, true, false]
+    ]
+  },
+
+  '7v9': {
+    us: [
+      [false, true, false, true, true, true, false, true],
+      [true, false, true, false, true, false, true, true],
+      [false, true, true, true, false, true, true, true],
+      [true, true, true, false, true, false, true, true],
+      [true, false, true, true, true, true, false, true], 
+      [true, true, true, true, false, true, true, false],
+      [true, true, false, true, true, true, true, false]
+    ],
+    opponent: [
+      [false, true, false, true, true, true, false, true],
+      [true, false, true, false, true, false, true, true],
+      [false, true, true, true, false, true, false, true],
+      [true, true, false, true, false, true, true, false],
+      [true, false, true, false, true, false, true, false],
+      [false, true, false, true, false, true, false, true],
+      [true, false, true, false, true, false, true, false],
+      [false, true, false, true, false, true, false, true],
+      [true, false, true, false, true, false, true, false]
+    ]
+  },
+
+  '7v10': {
+    us: [
+      [false, true, true, true, true, true, false, true],
+      [true, true, false, true, true, false, true, false],
+      [true, false, true, true, false, true, true, true],
+      [true, true, true, false, true, true, true, false],
+      [false, true, true, true, false, true, true, true],
+      [true, false, true, true, true, false, true, true],
+      [true, true, false, true, true, true, false, true]
+    ],
+    opponent: [
+      [false, true, false, true, false, true, false, true],
+      [true, false, true, false, true, false, true, false],
+      [true, false, true, false, true, false, true, false],
+      [false, true, false, true, false, true, false, true],
+      [false, true, false, true, false, true, false, true],
+      [true, false, true, false, true, false, true, false],
+      [false, true, false, true, false, true, false, true],
+      [true, false, true, false, true, false, true, false],
+      [false, true, false, true, false, true, false, true],
+      [true, false, true, false, true, false, true, false],
+    ]
+  },
+
+  '8v8': { 
+    us: [
+      [true, true, false, true, false, true, false, true],
+      [false, true, true, true, false, true, false, true],
+      [false, true, false, true, true, true, false, true],
+      [false, true, false, true, false, true, true, true],
+      [true, true, true, false, true, false, true, false],
+      [true, false, true, true, true, false, true, false],
+      [true, false, true, false, true, true, true, false],
+      [true, false, true, false, true, false, true, true]
+    ],
+    opponent: [
+      [true, true, false, true, false, true, false, true],
+      [false, true, true, true, false, true, false, true],
+      [false, true, false, true, true, true, false, true],
+      [false, true, false, true, false, true, true, true],
+      [true, true, true, false, true, false, true, false],
+      [true, false, true, true, true, false, true, false],
+      [true, false, true, false, true, true, true, false],
+      [true, false, true, false, true, false, true, true]
+    ]
+  },
+
+  '8v9': {
+    us: [
+      [true, true, false, true, false, true, false, true],
+      [false, true, true, true, false, true, false, true],
+      [false, true, false, true, true, true, false, true],
+      [false, true, false, true, false, true, true, true],
+      [true, false, true, false, true, false, true, true],
+      [true, false, true, true, true, false, true, false],
+      [true, false, true, false, true, true, true, false],
+      [true, true, true, false, true, false, true, false]
+    ],
+    opponent: [
+      [true, true, false, true, false, true, false, true],
+      [false, true, true, true, false, true, false, true],
+      [false, true, false, true, true, true, false, true],
+      [false, true, false, true, false, true, true, true],
+      [false, true, false, true, false, true, false, true],
+      [true, false, true, false, true, false, true, false],
+      [true, false, true, false, true, false, true, false],
+      [true, false, true, false, true, false, true, false],
+      [true, false, true, false, true, false, true, false]
+    ]
+  },
+
+  '8v10': { 
+    us: [
+      [true, true, false, true, false, true, false, true],
+      [false, true, true, true, false, true, false, true],
+      [false, true, false, true, true, true, false, true],
+      [false, true, false, true, false, true, true, true],
+      [true, true, true, false, true, false, true, false],
+      [true, false, true, true, true, false, true, false],
+      [true, false, true, false, true, true, true, false],
+      [true, false, true, false, true, false, true, true],
+    ],
+    opponent: [
+      [true, false, false, true, false, true, false, true],
+      [false, true, true, false, false, true, false, true],
+      [false, true, false, true, true, false, false, true],
+      [false, true, false, true, false, true, true, false],
+      [false, true, false, true, false, true, false, true],
+      [false, true, true, false, true, false, true, false],
+      [true, false, false, true, true, false, true, false],
+      [true, false, true, false, false, true, true, false],
+      [true, false, true, false, true, false, false, true],
+      [true, false, true, false, true, false, true, false], 
+    ]
+  },
+
+  '9v9': {
+    us: [
+      [true, true, false, true, false, true, false, true],
+      [false, true, true, true, false, true, false, true],
+      [false, true, false, true, true, true, false, true],
+      [false, true, false, true, false, true, true, true],
+      [false, true, false, true, false, true, false, true],
+      [ true, false, true, false, true, false, true, false],
+      [ true, false, true, false, true, false, true, false],
+      [ true, false, true, false, true, false, true, false],
+      [ true, false, true, false, true, false, true, false]
+    ],
+    opponent: [
+      [true, true, false, true, false, true, false, true],
+      [false, true, true, true, false, true, false, true],
+      [false, true, false, true, true, true, false, true],
+      [false, true, false, true, false, true, true, true],
+      [false, true, false, true, false, true, false, true],
+      [ true, false, true, false, true, false, true, false],
+      [ true, false, true, false, true, false, true, false],
+      [ true, false, true, false, true, false, true, false],
+      [ true, false, true, false, true, false, true, false]
+    ]
+  },
+
+  '9v10': { 
+    us: [
+      [false, true, false, true, false, true, false, true], 
+      [false, true, false, true, false, true, false, true], 
+      [false, true, false, true, false, true, false, true], 
+      [false, true, false, true, false, true, false, true], 
+      [true, true, true, false, true, false, true, false], 
+      [true, false, true, true, true, false, true, false], 
+      [true, false, true, false, true, true, true, false], 
+      [true, false, true, false, true, false, true, true], 
+      [true, false, true, false, true, false, true, false],
+    ],
+    opponent: [
+      [false, true, false, true, false, true, false, true],
+      [false, true, false, true, false, true, false, true],
+      [false, true, false, true, false, true, false, true],
+      [false, true, false, true, false, true, false, true],
+      [false, true, false, true, false, true, false, true],
+      [true, false, true, false, true, false, true, false],
+      [true, false, true, false, true, false, true, false],
+      [true, false, true, false, true, false, true, false],
+      [true, false, true, false, true, false, true, false],
+      [true, false, true, false, true, false, true, false], 
+    ]
+  },
+};
