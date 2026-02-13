@@ -1,6 +1,6 @@
 // Matrix structure: player_rank[1-9] -> array of periods [1-8]
 const DEFAULT_MATRICES = {
-
+  // --- DEFINITIVE USER-PROVIDED 5v5 MATRIX (Canonical Key) ---
   '5v5': {
     us: [
       [true, true, true, true, true, true, true, true],
@@ -17,7 +17,7 @@ const DEFAULT_MATRICES = {
       [true, true, true, true, true, true, true, true]
     ]
   },
-
+  // --- DEFINITIVE USER-PROVIDED 5v6 MATRIX (Canonical Key) ---
   '5v6': {
     us: [
       [true, true, true, true, true, true, true, true],
@@ -35,7 +35,7 @@ const DEFAULT_MATRICES = {
       [true, false, true, true, true, true, true, false]
     ]
   },
-
+  // --- DEFINITIVE USER-PROVIDED 5v7 MATRIX (Canonical Key) ---
   '5v7': {
     us: [
       [true, true, true, true, true, true, true, true],
@@ -54,7 +54,7 @@ const DEFAULT_MATRICES = {
       [true, false, true, false, true, true, true, false]
     ]
   },
-
+  // --- DEFINITIVE USER-PROVIDED 5v8 MATRIX (Canonical Key) ---
   '5v8': {
     us: [
       [true, true, true, true, true, true, true, true],  
@@ -74,7 +74,7 @@ const DEFAULT_MATRICES = {
       [false, true, false, true, true, true, false, true]
     ]
   },
-
+  // --- DEFINITIVE USER-PROVIDED 5v9 MATRIX (Canonical Key) ---
   '5v9': {
     us: [
       [true, true, true, true, true, true, true, true],
@@ -95,7 +95,7 @@ const DEFAULT_MATRICES = {
       [true, false, true, false, true, false, true, false]
     ]
   },
-
+  // --- DEFINITIVE USER-PROVIDED 5v10 MATRIX (Canonical Key) ---
   '5v10': {
     us: [
       [true, true, true, true, true, true, true, true],
@@ -117,7 +117,7 @@ const DEFAULT_MATRICES = {
       [true, false, true, false, true, false, true, false]
     ]
   },
-
+  // --- DEFINITIVE USER-PROVIDED 6v6 MATRIX (Canonical Key) ---
   '6v6': {
     us: [
       [true, true, false, true, true, true, true, true],
@@ -136,7 +136,7 @@ const DEFAULT_MATRICES = {
       [true, false, true, true, true, true, true, false]
     ]
   },
-
+  // --- DEFINITIVE USER-PROVIDED 6v7 MATRIX (Canonical Key) ---
   '6v7': {
     us: [
       [true, true, false, true, true, true, false, true],
@@ -156,7 +156,7 @@ const DEFAULT_MATRICES = {
       [true, false, true, false, true, true, true, false]
     ]
   },
-
+  // --- DEFINITIVE USER-PROVIDED 6v8 MATRIX (Canonical Key) ---
   '6v8': {
     us: [
       [true, true, false, true, true, true, false, true],
@@ -177,7 +177,7 @@ const DEFAULT_MATRICES = {
       [false, true, false, true, true, true, false, true]
     ]
   },
-
+  // --- DEFINITIVE USER-PROVIDED 6v9 MATRIX (Canonical Key) ---
   '6v9': {
     us: [
       [false, true, true, true, true, true, false, true],
@@ -199,7 +199,7 @@ const DEFAULT_MATRICES = {
       [true, false, true, false, true, false, true, false]
     ]
   },
-
+  // --- DEFINITIVE USER-PROVIDED 6v10 MATRIX (Canonical Key) ---
   '6v10': { 
     us: [
       [false, true, true, true, true, true, false, true],
@@ -222,7 +222,7 @@ const DEFAULT_MATRICES = {
       [true, false, true, false, true, false, true, false],
     ]
   },
-
+  // --- DEFINITIVE USER-PROVIDED 7v7 MATRIX (Canonical Key) ---
   '7v7': {
     us: [
       [true, true, false, true, true, true, false, true],
@@ -243,7 +243,7 @@ const DEFAULT_MATRICES = {
       [true, false, true, false, true, true, true, false]
     ]
   },
-
+  // --- DEFINITIVE USER-PROVIDED 7v8 MATRIX (Canonical Key) ---
   '7v8': {
     us: [
       [false, true, false, true, false, true, true, true],
@@ -265,7 +265,7 @@ const DEFAULT_MATRICES = {
       [true, false, true, false, true, true, true, false]
     ]
   },
-
+  // --- DEFINITIVE USER-PROVIDED 7v9 MATRIX (Canonical Key) ---
   '7v9': {
     us: [
       [false, true, false, true, true, true, false, true],
@@ -288,7 +288,7 @@ const DEFAULT_MATRICES = {
       [true, false, true, false, true, false, true, false]
     ]
   },
-
+  // --- DEFINITIVE USER-PROVIDED 7v10 MATRIX (Canonical Key) ---
   '7v10': {
     us: [
       [false, true, true, true, true, true, false, true],
@@ -312,7 +312,7 @@ const DEFAULT_MATRICES = {
       [true, false, true, false, true, false, true, false],
     ]
   },
-
+  // --- DEFINITIVE USER-PROVIDED 8v8 MATRIX ---
   '8v8': { 
     us: [
       [true, true, false, true, false, true, false, true],
@@ -335,7 +335,7 @@ const DEFAULT_MATRICES = {
       [true, false, true, false, true, false, true, true]
     ]
   },
-
+  // --- DEFINITIVE USER-PROVIDED 8v9 MATRIX ---
   '8v9': {
     us: [
       [true, true, false, true, false, true, false, true],
@@ -359,7 +359,7 @@ const DEFAULT_MATRICES = {
       [true, false, true, false, true, false, true, false]
     ]
   },
-
+  // --- DEFINITIVE USER-PROVIDED 8v10 MATRIX (Canonical Key) ---
   '8v10': { 
     us: [
       [true, true, false, true, false, true, false, true],
@@ -384,7 +384,7 @@ const DEFAULT_MATRICES = {
       [true, false, true, false, true, false, true, false], 
     ]
   },
-
+  // --- DEFINITIVE USER-PROVIDED 9v9 MATRIX ---
   '9v9': {
     us: [
       [true, true, false, true, false, true, false, true],
@@ -409,7 +409,7 @@ const DEFAULT_MATRICES = {
       [ true, false, true, false, true, false, true, false]
     ]
   },
-
+  // --- DEFINITIVE USER-PROVIDED 9v10 MATRIX (Canonical Key) ---
   '9v10': { 
     us: [
       [false, true, false, true, false, true, false, true], 
